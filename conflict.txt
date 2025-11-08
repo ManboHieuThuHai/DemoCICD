@@ -1,2 +1,2 @@
 Line A
-Feature1 version
+Line B
