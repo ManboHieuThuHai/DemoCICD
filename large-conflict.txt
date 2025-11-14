@@ -1,0 +1,163 @@
+# Large Conflict Demo - Feature A Version
+# This file demonstrates handling large merge conflicts
+
+## Section 1: Authentication Module (Feature-A)
+Feature-A implements OAuth2 authentication with the following flow:
+- User login with email/password
+- Token generation using JWT
+- Refresh token mechanism
+- Session management with Redis
+- Two-factor authentication support
+
+### Implementation Details
+```javascript
+class AuthService {
+  async login(email, password) {
+    const user = await User.findByEmail(email);
+    if (!user) throw new Error('User not found');
+    
+    const isValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isValid) throw new Error('Invalid credentials');
+    
+    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: '1h' });
+    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, { expiresIn: '7d' });
+    
+    await redis.set(`session:${user.id}`, JSON.stringify({ token, refreshToken }));
+    
+    return { token, refreshToken, user };
+  }
+}
+```
+
+## Section 2: User Profile Management (Feature-A)
+Feature-A adds comprehensive user profile features:
+- Profile picture upload with image optimization
+- Bio and description fields
+- Social media links integration
+- Privacy settings (public/private/friends-only)
+- Profile completion percentage tracker
+
+### Database Schema
+```sql
+CREATE TABLE user_profiles (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  bio TEXT,
+  avatar_url VARCHAR(500),
+  cover_photo_url VARCHAR(500),
+  location VARCHAR(200),
+  website VARCHAR(300),
+  social_links JSONB,
+  privacy_level VARCHAR(20),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+## Section 3: Notification System (Feature-A)
+Real-time notification system with:
+- Email notifications
+- Push notifications (web + mobile)
+- In-app notification center
+- Notification preferences per category
+- Read/unread status tracking
+
+### API Endpoints
+- POST /api/notifications/send
+- GET /api/notifications/list
+- PUT /api/notifications/:id/read
+- DELETE /api/notifications/:id
+- GET /api/notifications/preferences
+
+## Section 4: Search Functionality (Feature-A)
+Elasticsearch integration for:
+- Full-text search across users, posts, comments
+- Fuzzy matching and typo tolerance
+- Search filters by date, category, author
+- Search suggestions and autocomplete
+- Search history tracking
+
+### Search Query Example
+```javascript
+async function searchContent(query, filters) {
+  const result = await elastic.search({
+    index: 'content',
+    body: {
+      query: {
+        bool: {
+          must: [
+            { multi_match: { query: query, fields: ['title^2', 'content', 'tags'] } }
+          ],
+          filter: filters
+        }
+      },
+      highlight: {
+        fields: { content: {} }
+      }
+    }
+  });
+  return result.hits.hits;
+}
+```
+
+## Section 5: API Rate Limiting (Feature-A)
+Rate limiting implementation:
+- Token bucket algorithm
+- Per-user and per-IP limits
+- Different tiers (free, premium, enterprise)
+- Rate limit headers in responses
+- Automatic throttling on abuse
+
+### Configuration
+```yaml
+rate_limits:
+  free_tier:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+  premium_tier:
+    requests_per_minute: 300
+    requests_per_hour: 10000
+  enterprise_tier:
+    requests_per_minute: 1000
+    requests_per_hour: 50000
+```
+
+## Section 6: Caching Strategy (Feature-A)
+Multi-layer caching:
+- Redis for session and frequently accessed data
+- CDN for static assets
+- Browser caching with ETags
+- Query result caching
+- Cache invalidation strategies
+
+## Section 7: Testing Infrastructure (Feature-A)
+Comprehensive testing setup:
+- Unit tests with Jest
+- Integration tests with Supertest
+- E2E tests with Playwright
+- Load testing with Artillery
+- Code coverage targets: 80%+
+
+## Section 8: Deployment Pipeline (Feature-A)
+CI/CD configuration:
+- GitHub Actions workflow
+- Automated testing on PR
+- Docker containerization
+- Kubernetes deployment
+- Blue-green deployment strategy
+- Automatic rollback on failure
+
+## Section 9: Monitoring and Logging (Feature-A)
+Observability stack:
+- Application logs with Winston
+- Error tracking with Sentry
+- Performance monitoring with New Relic
+- Custom metrics with Prometheus
+- Grafana dashboards
+
+## Section 10: Documentation (Feature-A)
+- API documentation with Swagger/OpenAPI
+- Architecture decision records (ADR)
+- Onboarding guide for new developers
+- Deployment runbook
+- Troubleshooting guide
