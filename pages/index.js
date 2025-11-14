@@ -12,7 +12,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Chào mừng đến với <span className={styles.highlight}>MyProject</span>
+          Chào mừng đến với <span className={styles.highlight}>MyProject Develop</span>
         </h1>
 
         <p className={styles.description}>
