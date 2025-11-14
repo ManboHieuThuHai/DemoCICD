@@ -16,7 +16,7 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>
-          Website Next.js đơn giản - Demo Git Conflict Resolution
+          Develop: Cải thiện hiệu suất và tối ưu hóa database queries
         </p>
 
         <div className={styles.grid}>
