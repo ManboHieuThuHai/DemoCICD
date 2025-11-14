@@ -12,7 +12,10 @@ export default function About() {
         <h1 className={styles.title}>Giới thiệu về MyProject</h1>
         
         <p className={styles.description}>
-          Đây là dự án demo để thực hành Git conflict resolution với:
+          [FEATURE-4 BRANCH] Hệ thống quản lý dự án với Git:
+          - Automated testing pipeline
+          - Continuous integration/deployment
+          - Code review workflows
         </p>
 
         <ul style={{ textAlign: 'left', maxWidth: '600px' }}>
@@ -20,6 +23,8 @@ export default function About() {
           <li>Large merge conflicts</li>
           <li>Git stash in conflict scenarios</li>
           <li>Git rerere automation</li>
+          <li>Branch protection rules</li>
+          <li>Pull request templates</li>
         </ul>
 
         <a href="/" className={styles.card}>
