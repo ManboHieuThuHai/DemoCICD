@@ -1,0 +1,226 @@
+# Large Conflict Demo - Feature B Version
+# This file demonstrates handling large merge conflicts
+
+## Section 1: Payment Integration Module (Feature-B)
+Feature-B implements Stripe payment integration:
+- Multiple payment methods (card, bank transfer, e-wallet)
+- Subscription management with recurring billing
+- Invoice generation and email delivery
+- Payment history and transaction logs
+- Refund processing automation
+
+### Payment Service Implementation
+```javascript
+class PaymentService {
+  async processPayment(userId, amount, method) {
+    const customer = await stripe.customers.retrieve(userId);
+    
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100,
+      currency: 'usd',
+      customer: customer.id,
+      payment_method: method,
+      confirm: true
+    });
+    
+    await Transaction.create({
+      userId,
+      amount,
+      status: paymentIntent.status,
+      stripeId: paymentIntent.id
+    });
+    
+    return paymentIntent;
+  }
+}
+```
+
+## Section 2: Analytics Dashboard (Feature-B)
+Feature-B includes comprehensive analytics:
+- Real-time user activity tracking
+- Revenue metrics and charts
+- User engagement heatmaps
+- Conversion funnel analysis
+- Custom report builder
+
+### Analytics Events Schema
+```sql
+CREATE TABLE analytics_events (
+  id UUID PRIMARY KEY,
+  event_type VARCHAR(100),
+  user_id UUID REFERENCES users(id),
+  session_id VARCHAR(100),
+  properties JSONB,
+  page_url VARCHAR(500),
+  referrer VARCHAR(500),
+  device_info JSONB,
+  timestamp TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_events_type ON analytics_events(event_type);
+CREATE INDEX idx_events_user ON analytics_events(user_id);
+CREATE INDEX idx_events_timestamp ON analytics_events(timestamp);
+```
+
+## Section 3: Email Marketing System (Feature-B)
+Automated email campaigns with:
+- Drag-and-drop email template builder
+- Audience segmentation
+- A/B testing for subject lines and content
+- Automated drip campaigns
+- Email performance analytics
+
+### Campaign Configuration
+```yaml
+campaigns:
+  welcome_series:
+    trigger: user_signup
+    delay: 0
+    emails:
+      - template: welcome_email
+        delay_days: 0
+      - template: onboarding_tips
+        delay_days: 3
+      - template: feature_highlights
+        delay_days: 7
+  re_engagement:
+    trigger: inactive_30_days
+    emails:
+      - template: we_miss_you
+        delay_days: 0
+```
+
+## Section 4: Content Management System (Feature-B)
+Full-featured CMS:
+- Rich text editor with markdown support
+- Media library management
+- Version control for content
+- Content scheduling and publishing workflow
+- SEO optimization tools
+
+### Content Model
+```javascript
+const ContentSchema = new Schema({
+  title: { type: String, required: true },
+  slug: { type: String, unique: true },
+  body: { type: String },
+  excerpt: String,
+  featuredImage: String,
+  author: { type: ObjectId, ref: 'User' },
+  status: { type: String, enum: ['draft', 'published', 'archived'] },
+  publishedAt: Date,
+  categories: [{ type: ObjectId, ref: 'Category' }],
+  tags: [String],
+  metadata: {
+    title: String,
+    description: String,
+    keywords: [String]
+  },
+  versions: [{
+    content: String,
+    createdAt: Date,
+    createdBy: ObjectId
+  }]
+});
+```
+
+## Section 5: Real-time Chat System (Feature-B)
+WebSocket-based chat with:
+- One-on-one and group messaging
+- Message reactions and threading
+- File sharing and image preview
+- Typing indicators and read receipts
+- Message search and history
+
+### WebSocket Event Handlers
+```javascript
+io.on('connection', (socket) => {
+  socket.on('join_room', (roomId) => {
+    socket.join(roomId);
+    socket.to(roomId).emit('user_joined', socket.userId);
+  });
+  
+  socket.on('send_message', async (data) => {
+    const message = await Message.create({
+      roomId: data.roomId,
+      userId: socket.userId,
+      content: data.content,
+      type: data.type
+    });
+    
+    io.to(data.roomId).emit('new_message', message);
+  });
+  
+  socket.on('typing', (roomId) => {
+    socket.to(roomId).emit('user_typing', socket.userId);
+  });
+});
+```
+
+## Section 6: Admin Dashboard (Feature-B)
+Comprehensive admin panel:
+- User management (CRUD, roles, permissions)
+- System health monitoring
+- Database query tools
+- Audit logs viewer
+- Feature flags management
+- Configuration editor
+
+## Section 7: Mobile API Optimization (Feature-B)
+Mobile-first API design:
+- GraphQL endpoint for flexible queries
+- Response pagination and cursor-based navigation
+- Image resizing on-the-fly
+- Offline support with sync queue
+- Reduced payload sizes
+
+### GraphQL Schema Example
+```graphql
+type Query {
+  user(id: ID!): User
+  posts(
+    cursor: String
+    limit: Int
+    filter: PostFilter
+  ): PostConnection
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  profile: Profile
+  posts: [Post!]!
+}
+
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+}
+```
+
+## Section 8: Security Enhancements (Feature-B)
+Advanced security features:
+- SQL injection prevention
+- XSS protection with CSP headers
+- CSRF token validation
+- Rate limiting per endpoint
+- Security headers (HSTS, X-Frame-Options)
+- Automated security scanning
+
+## Section 9: Performance Optimization (Feature-B)
+Performance improvements:
+- Database query optimization with indexes
+- N+1 query elimination
+- Lazy loading for heavy components
+- Code splitting and tree shaking
+- Image lazy loading and WebP format
+- Service worker for offline support
+
+## Section 10: Internationalization (Feature-B)
+Multi-language support:
+- i18n library integration
+- Translation management system
+- RTL language support
+- Currency and date formatting
+- Locale-based content delivery
